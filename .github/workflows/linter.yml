@@ -6,7 +6,7 @@ on:
     branches:
       - master
       - dev
-      - task/playwright-workflow
+      - task/fork-playwright
 
   pull_request:
     types: [opened, synchronize, reopened, closed]
