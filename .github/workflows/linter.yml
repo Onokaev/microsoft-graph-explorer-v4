@@ -20,6 +20,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Extract branch name
+        uses: actions/checkout@v2
+
+
       - name: Trigger external worfkflow
         uses: convictional/trigger-workflow-and-wait@v1.3.0
         with:
@@ -29,3 +33,4 @@ jobs:
           ref: master
           github_token: ${{ secrets.ACCESS_TOKEN }}
           wait_workflow: true
+          client_payload: '{ branchName : ${GITHUB_REF##*/}, repo : graph-explorer  }'
