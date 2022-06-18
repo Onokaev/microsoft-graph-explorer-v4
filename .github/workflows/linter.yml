@@ -20,60 +20,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node
-        uses: actions/setup-node@v3
+      - name: Trigger external worfkflow
+        uses: convictional/trigger-workflow-and-wait@v1.3.0
         with:
-          node-version: "14.x"
-
-      - name: Cache npm
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: npm-
-
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
-
-  build:
-    name: Build packages
-    needs: install
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: "14.x"
-
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Build
-        run: |
-          npm run build
-          curl -X POST https://api.github.com/repos/${{ github.repository.owner.name }}/ms-graph-tester-v1/actions/workflows/run-playwright-test/dispatches \
-            -H 'Accept: application/vnd.github.everest-preview+json' \
-            -U ${{ secrets.ACCESS_TOKEN }} \
-            --data '{"event_type": "build-complete"}'
+          owner: ${{ github.repository.owner }}
+          repo: ms-graph-tester-v1
+          workflow: run-playwright-test.yml
+          ref: master
+          github_token: ${{ secrets.ACCESS_TOKEN }}
