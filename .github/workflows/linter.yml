@@ -23,7 +23,7 @@ jobs:
       - name: Trigger external worfkflow
         uses: convictional/trigger-workflow-and-wait@v1.3.0
         with:
-          owner: ${{ github.repository.owner }}
+          owner: ${{ github.repository.owner.name }}
           repo: ms-graph-tester-v1
           workflow_file_name: run-playwright-test.yml
           ref: master
