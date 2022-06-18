@@ -25,6 +25,6 @@ jobs:
         with:
           owner: ${{ github.repository.owner }}
           repo: ms-graph-tester-v1
-          workflow: run-playwright-test.yml
+          workflow_file_name: run-playwright-test.yml
           ref: master
           github_token: ${{ secrets.ACCESS_TOKEN }}
