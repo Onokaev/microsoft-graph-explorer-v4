@@ -21,7 +21,6 @@ jobs:
 
     steps:
       - name: Extract branch name
-        uses: actions/checkout@v2
         run: |
           echo "::set-env name=BRANCH_NAME::${GITHUB_REF#refs/heads/}"
         id: extract_branch
