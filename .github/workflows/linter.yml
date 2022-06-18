@@ -13,6 +13,7 @@ on:
 
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  BRANCH_NAME: GITHUB_REF#refs/heads/
 
 jobs:
   install:
@@ -29,4 +30,4 @@ jobs:
           ref: master
           github_token: ${{ secrets.ACCESS_TOKEN }}
           wait_workflow: true
-          client_payload: '{ "branchName": ${{GITHUB_REF#refs/heads/}} }'
+          client_payload: '{ "branchName": $BRANCH_NAME }'
