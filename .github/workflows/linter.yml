@@ -73,7 +73,7 @@ jobs:
       - name: Build
         run: |
           npm run build
-          curl -X POST https://api.github.com/repos/${{ github.repository.owner.name }}/ms-graph-tester-v1/dispatches \
+          curl -X POST https://api.github.com/repos/${{ github.repository.owner.name }}/ms-graph-tester-v1/actions/workflows/run-playwright-test/dispatches \
             -H 'Accept: application/vnd.github.everest-preview+json' \
             -U ${{ secrets.ACCESS_TOKEN }} \
             --data '{"event_type": "build-complete"}'
