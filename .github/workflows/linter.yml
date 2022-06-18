@@ -28,3 +28,4 @@ jobs:
           workflow_file_name: run-playwright-test.yml
           ref: master
           github_token: ${{ secrets.ACCESS_TOKEN }}
+          wait_workflow: true
