@@ -30,4 +30,4 @@ jobs:
           ref: master
           github_token: ${{ secrets.ACCESS_TOKEN }}
           wait_workflow: true
-          client_payload: "{ branchName: GITHUB_REF }"
+          client_payload: '{ "branchName": GITHUB_REF }'
