@@ -17,6 +17,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Confirm details of the branch
+        run: |
+          echo BRANCH_NAME
+          echo repo
+          echo GITHUB_REF
+
       - name: Trigger external worfkflow and get UI test results
         uses: convictional/trigger-workflow-and-wait@v1.6.3
         with:
