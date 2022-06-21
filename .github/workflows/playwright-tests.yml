@@ -29,4 +29,4 @@ jobs:
           ref: master
           github_token: ${{ secrets.ACCESS_TOKEN }}
           wait_workflow: true
-          client_payload: '{"branchName": "${{ github.ref }}", "repo": "https://github.com/microsoftgraph/microsoft-graph-explorer-v4"}'
+          client_payload: '{"branchName": "${{ github.ref }}", "repo": "https://github.com/Onokaev/microsoft-graph-explorer-v4"}'
