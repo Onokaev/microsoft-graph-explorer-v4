@@ -7,9 +7,6 @@ on:
       - master
       - dev
       - task/fork-playwright
-env:
-  BRANCH_NAME: $GITHUB_REF
-  repo: "https://developer.microsoft.com/en-us/graph/graph-explorer"
 
 jobs:
   install:
@@ -32,4 +29,4 @@ jobs:
           ref: master
           github_token: ${{ secrets.ACCESS_TOKEN }}
           wait_workflow: true
-          client_payload: '{"branchName": "${{ github.ref }}", "repo": "https://developer.microsoft.com/en-us/graph/graph-explorer"}'
+          client_payload: '{"branchName": "${{ github.ref }}", "repo": "https://github.com/microsoftgraph/microsoft-graph-explorer-v4"}'
