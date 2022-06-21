@@ -1,0 +1,28 @@
+name: Automated UI Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - dev
+      - task/fork-playwright
+env:
+  BRANCH_NAME: GITHUB_REF#refs/heads/
+
+jobs:
+  install:
+    name: Install node modules
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger external worfkflow and get UI test results
+        uses: convictional/trigger-workflow-and-wait@v1.6.3
+        with:
+          owner: Onokaev
+          repo: ms-graph-tester-v1
+          workflow_file_name: run-playwright-test.yml
+          ref: master
+          github_token: ${{ secrets.ACCESS_TOKEN }}
+          wait_workflow: true
+          client_payload: '{ "branchName": $BRANCH_NAME, "repo": "https://github.com/microsoftgraph/microsoft-graph-explorer-v4" }'
