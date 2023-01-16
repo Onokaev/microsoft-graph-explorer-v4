@@ -58,17 +58,6 @@ jobs:
   - job: One
     displayName: "Build and test validation"
     steps:
-      - task: CredScan@2
-        inputs:
-          toolMajorVersion: "V2"
-
-      - task: ComponentGovernanceComponentDetection@0
-        inputs:
-          scanType: "Register"
-          verbosity: "Verbose"
-          alertWarningLevel: "High"
-          ignoreDirectories: ".github,.vscode/"
-
       - task: NodeTool@0
         inputs:
           versionSpec: "14.20.x"
