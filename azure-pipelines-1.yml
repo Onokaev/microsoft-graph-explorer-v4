@@ -1,3 +1,10 @@
+# ------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.
+# See License in the project root for license information.
+# ------------------------------------------------------------------------------
+#
+# 1. Validates the repository's pull requests and commits
+# 2. Builds and publishes release artifacts
 
 name: $(date:yyyyMMdd)$(rev:.r)
 
@@ -52,8 +59,99 @@ trigger:
       - package-lock.json
 
 jobs:
+  - job: One
+    displayName: "Build and test validation"
+    steps:
+      - task: CredScan@3
+
+      - task: ComponentGovernanceComponentDetection@0
+        inputs:
+          scanType: "Register"
+          verbosity: "Verbose"
+          alertWarningLevel: "High"
+          ignoreDirectories: ".github,.vscode/"
+
+      - task: NodeTool@0
+        inputs:
+          versionSpec: "14.20.x"
+        displayName: "Install Node.js"
+
+      - script: |
+          npm install
+        displayName: "npm install"
+
+      - script: |
+          npm run lint
+        displayName: "Runs linting checks"
+
+      - script: |
+          npm test
+        displayName: "Runs Unit tests"
+
+      - task: PublishTestResults@2
+        condition: succeededOrFailed()
+        inputs:
+          testResultsFormat: "JUnit"
+          testResultsFiles: "test-report.xml"
+        displayName: "Publish Test Results"
+
+      - script: |
+          npm run build
+        displayName: "Run build"
+
   - job: Two
+    displayName: "Run playwright tests"
+    condition: eq(variables['isDev'], 'true')
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: "14.20.x"
+        displayName: "Install npm"
+
+      - script: |
+          npm install
+        displayName: "npm install"
+
+      - script: |
+          npm install -D @playwright/test
+          npx playwright install-deps
+        displayName: "Install playwright dependancies"
+
+      - script: |
+          npx playwright install
+        displayName: "Install playwright"
+
+      - script: |
+          npm run test-playwright-accessibility
+        displayName: "Run accessibility tests"
+
+      - script: |
+          set CI=true
+          npm run test-playwright
+
+        env:
+          REACT_APP_CLIENT_ID: $(REACT_APP_PLAYWRIGHT_TEST_CLIENT_ID)
+          REACT_APP_INSTRUMENTATION_KEY: $(REACT_APP_STAGING_INSTRUMENTATION_KEY)
+          REACT_APP_FEEDBACK_CAMPAIGN_ID: $(REACT_APP_STAGING_FEEDBACK_CAMPAIGN_ID)
+          REACT_APP_NPS_FEEDBACK_CAMPAIGN_ID: $(REACT_APP_NPS_FEEDBACK_CAMPAIGN_ID)
+          REACT_APP_NOMINATION_PERIOD: $(REACT_APP_NOMINATION_PERIOD)
+          REACT_APP_COOLDOWN_PERIOD: $(REACT_APP_COOLDOWN_PERIOD)
+          REACT_APP_USAGE_TIME: $(REACT_APP_USAGE_TIME)
+          PLAYWRIGHT_TESTS_BASE_URL: $(PLAYWRIGHT_TESTS_BASE_URL)
+          PLAYWRIGHT_TESTS_USERNAME: $(PLAYWRIGHT_TESTS_USERNAME)
+          PLAYWRIGHT_TESTS_PASSWORD: $(PLAYWRIGHT_TESTS_PASSWORD)
+        displayName: "Run playwright tests"
+
+      - publish: $(System.DefaultWorkingDirectory)/playwright-report
+        artifact: playwright-report
+        condition: always()
+        displayName: "Publish test results"
+
+
+  - job: Three
     displayName: "Publish artifacts"
+    dependsOn: One
+    condition: and(succeeded(), or(eq(variables['isMaster'], 'true'), eq(variables['isDev'], 'true')))
     steps:
       - task: NodeTool@0
         inputs:
@@ -78,6 +176,7 @@ jobs:
 
       - task: PowerShell@2
         displayName: "Set version-number"
+        condition: and(succeeded(), eq(variables['isMaster'], 'true'))
         inputs:
           targetType: "inline"
           script: |
@@ -89,6 +188,7 @@ jobs:
 
       - script: |
           npm run build
+        condition: and(succeeded(), eq(variables['isMaster'], 'true'))
         env:
           REACT_APP_CLIENT_ID: $(REACT_APP_PROD_CLIENT_ID)
           REACT_APP_INSTRUMENTATION_KEY: $(REACT_APP_INSTRUMENTATION_KEY)
